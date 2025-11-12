@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Recommendation System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 Movie Recommendation System</h1>
+
+    <form id="recommendForm">
+      <input type="text" id="movie" name="movie" placeholder="Enter movie name..." required>
+      <button type="submit">Recommend</button>
+    </form>
+
+    <div id="results" class="results"></div>
+  </div>
+
+  <footer>
+    <p>Developed by <b>Your Name</b></p>
+  </footer>
+
+  <script>
+    document.getElementById('recommendForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const movie = document.getElementById('movie').value;
+
+      const formData = new FormData();
+      formData.append('movie', movie);
+
+      const res = await fetch('/recommend', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = "";
+
+      if (data.recommendations.length === 0) {
+        resultsDiv.innerHTML = "<p>No similar movies found.</p>";
+      } else {
+        data.recommendations.forEach(m => {
+          const card = document.createElement('div');
+          card.className = 'movie-card';
+          card.innerHTML = `<h3>${m}</h3>`;
+          resultsDiv.appendChild(card);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
